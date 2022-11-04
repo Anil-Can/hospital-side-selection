@@ -1,0 +1,43 @@
+.cbs-sidebar {
+    position: absolute;
+    padding-top: 50px;
+    height: 100%;
+    width: 70px;
+    left: -70px;
+    background-color: var(--surface-0);
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    z-index: 5;
+    transition: .5s;
+}
+.cbs-sidebar.active {
+    left: 0;
+}
+.cbs-sidebar div {
+    margin-top: 10px;
+    padding: 0.2em;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    background-color: transparent;
+    flex-direction: column;
+    cursor: pointer;
+}
+.cbs-sidebar div svg {
+    color: var(--primary-color);
+    font-size: 1.5em;
+}
+.cbs-sidebar div span {
+    color: var(--surface-600)
+}
+.cbs-sidebar div.active,.cbs-sidebar div:hover {
+    background-color: var(--primary-color);
+
+}
+.cbs-sidebar div.active svg,.cbs-sidebar div:hover svg {
+    color: var(--surface-0);
+}
+.cbs-sidebar div.active span,.cbs-sidebar div:hover span {
+    color: var(--surface-0);
+}

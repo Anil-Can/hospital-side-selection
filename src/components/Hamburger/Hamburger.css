@@ -1,0 +1,13 @@
+.cbs-hamburger {
+    position: absolute;
+    left: 15px;
+    top:10px;
+    border-radius: 2px;
+    padding: 0.3em 0.7em;
+    z-index: 10;
+    cursor: pointer;
+    background-color: var(--primary-color);
+}
+.cbs-hamburger svg {
+    color: var(--surface-a);
+}
