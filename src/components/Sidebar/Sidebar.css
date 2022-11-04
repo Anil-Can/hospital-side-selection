@@ -15,8 +15,7 @@
     left: 0;
 }
 .cbs-sidebar div {
-    margin-top: 10px;
-    padding: 0.2em;
+    padding: 0.4em;
     width: 100%;
     display: flex;
     align-items: center;
@@ -29,7 +28,8 @@
     font-size: 1.5em;
 }
 .cbs-sidebar div span {
-    color: var(--surface-600)
+    color: var(--surface-600);
+    user-select: none;
 }
 .cbs-sidebar div.active,.cbs-sidebar div:hover {
     background-color: var(--primary-color);

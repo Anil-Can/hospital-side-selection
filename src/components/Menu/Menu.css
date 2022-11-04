@@ -1,0 +1,8 @@
+.cbs-menu {
+    position: absolute;
+    width: 300px;
+    height: 100%;
+    background-color: var(--surface-0);
+    left: 70px;
+    z-index: 3;
+}

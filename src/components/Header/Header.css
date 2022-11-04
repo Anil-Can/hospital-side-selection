@@ -1,0 +1,18 @@
+.cbs-menu-header {
+    display: flex;
+    align-items: center;
+    background-color: var(--primary-color);
+    color: var(--primary-color-text);
+    padding: 0.6em 1em;
+}
+.cbs-menu-header text {
+    font-size: 1.3em;
+    color: var(--surface-a);
+    font-weight: bold;
+}
+.cbs-menu-header svg {
+    margin-left: auto;
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+}

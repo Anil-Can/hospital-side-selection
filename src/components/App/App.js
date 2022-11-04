@@ -4,14 +4,17 @@ import { AppContext } from "../../context/AppContext";
 import "./App.css";
 import Hamburger from "../Hamburger/Hamburger";
 import Sidebar from "../Sidebar/Sidebar";
+import Menu from "../Menu/Menu";
 
 export default function App() {
+    const[mode,setMode] = useState("")
     return(
         <React.StrictMode>
-            <AppContext.Provider value={{deneme:"test"}}>
+            <AppContext.Provider value={{mode,setMode}}>
                 <Hamburger/>
                 <Sidebar/>
                 <Map/>
+                <Menu/>
             </AppContext.Provider>
         </React.StrictMode>
     )

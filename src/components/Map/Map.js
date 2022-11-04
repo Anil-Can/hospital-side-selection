@@ -6,7 +6,6 @@ import "./Map.css";
 
 export default function Map() {
     const isMobile = document.body.offsetWidth > 600 ? false : true;
-    const {deneme} = useContext(AppContext);
     const mapStyle = {
         id: "O_SM",
         version: 8,
