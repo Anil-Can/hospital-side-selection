@@ -12,8 +12,19 @@ export default function Sidebar(){
         let active = document.querySelector('.cbs-siderbar-icon.active');
         if(active !== null && active !== target) active.classList.toggle('active');
         target.classList.toggle('active');
-
-        setMode(target.classList.contains('active') ? target.children[1].textContent:'')
+        
+        let menuItem = document.querySelector('.cbs-menu');
+        if(target.classList.contains('active'))
+        {
+            if(!menuItem.classList.contains('active')) document.querySelector('.cbs-menu').classList.toggle('active');
+            setMode(target.children[1].textContent)
+        }
+        else
+        {
+            if(menuItem.classList.contains('active')) document.querySelector('.cbs-menu').classList.toggle('active');
+            setMode('')
+        }
+        
     }
     
     return(

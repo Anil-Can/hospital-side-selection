@@ -9,7 +9,9 @@ export default function Hamburger(){
         document.querySelector('.cbs-sidebar').classList.toggle('active');
         setMode('');
         let sidebarItem = document.querySelector('.cbs-siderbar-icon.active');
+        let menuItem = document.querySelector('.cbs-menu.active');
         if(sidebarItem !== null) sidebarItem.classList.toggle('active');
+        if(menuItem !== null) menuItem.classList.toggle('active');
     
     }
     return (

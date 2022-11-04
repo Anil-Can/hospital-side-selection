@@ -5,14 +5,23 @@
     color: var(--primary-color-text);
     padding: 0.6em 1em;
 }
-.cbs-menu-header text {
-    font-size: 1.3em;
+.cbs-menu-header span {
+    font-size: 1.2em;
     color: var(--surface-a);
-    font-weight: bold;
+    font-weight: 600;
+    margin-left: 20px;
 }
 .cbs-menu-header svg {
+    padding: 0.3em;
     margin-left: auto;
     width: 30px;
     height: 30px;
+    border-radius: 15px;
     cursor: pointer;
+    transition: .5s;
+}
+.cbs-menu-header svg:hover{
+    border: 1px solid var(--primary-color-text);
+    background-color:  var(--primary-color);
+    color: var(--primary-color-text);
 }
