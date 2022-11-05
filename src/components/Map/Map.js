@@ -5,6 +5,7 @@ import { AppContext } from "../../context/AppContext";
 import "./Map.css";
 
 export default function Map() {
+    const {mode,instance,setMap} = useContext(AppContext);
     const isMobile = document.body.offsetWidth > 600 ? false : true;
     const mapStyle = {
         id: "O_SM",
@@ -46,6 +47,7 @@ export default function Map() {
             center: center,
             zoom: zoom,
         });
+        setMap(map.current);
         var hoveredStateId = null;
         map.current.on('load', ()=> {
         });

@@ -1,14 +1,19 @@
-import React from "react";
+import React,{useContext} from "react";
 import { VscChromeClose } from "react-icons/vsc";
-import "./Header.css"
+import { AppContext } from "../../context/AppContext";
+import { pointOnTheFeature,toFeature } from "../../utils";
+import "./Header.css";
+import saglik from "data/saglik_kurum.json";
 
 export default function Header({text}){
-    const close = () => {
+    const {mode,Axiosinstance,map} = useContext(AppContext);
+    
+    const close = async () => {
     }
     return (
         <div className="cbs-menu-header" >
             <span>{text}</span>
-            <VscChromeClose/>
+            <VscChromeClose onClick={close}/>
         </div>
     )
 }

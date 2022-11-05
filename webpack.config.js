@@ -12,7 +12,7 @@ module.exports = {
         static:{
             directory: path.resolve(__dirname, "./")
         },
-        port:2000,
+        port:3000,
         open:true,
         hot:true,
         compress:true,
