@@ -5,7 +5,7 @@ import "./Menu.css";
 
 
 function Menu() {
-    const {mode,instance} = useContext(AppContext);
+    const {mode} = useContext(AppContext);
     return (
         <div className='cbs-menu'>
             <Header text={mode}/>
