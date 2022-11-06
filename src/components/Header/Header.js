@@ -3,13 +3,14 @@ import { VscChromeClose } from "react-icons/vsc";
 import { AppContext } from "../../context/AppContext";
 import { pointOnTheFeature,toFeature } from "../../utils";
 import "./Header.css";
-// import stops from "data/stops.json";
+import { default as intersect }  from '@turf/intersect';
+import { default as lineIntersect }  from '@turf/line-intersect';
+//import railway from "data/railway.json";
 
 export default function Header({text}){
     const {mode,Axiosinstance,map} = useContext(AppContext);
     
     const close = async () => {
-        
     }
     return (
         <div className="cbs-menu-header" >
