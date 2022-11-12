@@ -8,9 +8,11 @@ import { default as lineIntersect }  from '@turf/line-intersect';
 //import railway from "data/railway.json";
 
 export default function Header({text}){
-    const {mode,Axiosinstance,map} = useContext(AppContext);
+    const {setMode} = useContext(AppContext);
     
     const close = async () => {
+        document.querySelector('.cbs-menu').classList.toggle('active');
+        setMode('');
     }
     return (
         <div className="cbs-menu-header" >
