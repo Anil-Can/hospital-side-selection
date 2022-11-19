@@ -30,32 +30,29 @@ const pointOnTheFeature = (point,polygon,map) => {
 export {toFeature,pointOnTheFeature}
 // Mahalle Kaydı
 // let xyz = ilce.features.map(e => {
-    //     let geomText = "";
-    //     e.geometry.coordinates[0].forEach((j,indexJ) => {
-    //         j.forEach((k,index) => {
-    //             let lastIndex = k.length - 1;
-    //             if(index === 0) geomText +=  "(";
-    //             geomText +=  `${k[0]} ${k[1]},`
-    //             if(index === lastIndex) geomText +=  `${j[0][0]} ${j[0][1]},`
-    //         });
-    //         let lastIndex = e.geometry.coordinates[0].length - 1;
-    //         if(lastIndex !== indexJ)geomText +=  "),";
-    //         else {
-    //             geomText = geomText.slice(0, -1)
-    //         }
-    //     });
-    //     //geomText = geomText.slice(0, -1)
-    //     let geom = `ST_GeomFromEWKT('SRID=4326;MULTIPOLYGON((${geomText})))')`;
-    //     return {
-    //         "name": e.properties.IlceAdi,
-    //         "area": e.properties.Shape_Area,
-    //         "geom": geom,
-    //         "population": e.properties.population
-    //     }
-    // });
-    // xyz.forEach(e => {
-    //     instance.post("/createDistrict",e);
-    // })
+//     let geomText = "";
+//     e.geometry.coordinates[0].forEach((j,indexJ) => {
+//         j.forEach((k,index) => {
+//             let lastIndex = j.length - 1;
+//             if(index === 0)  geomText +=  "(";
+//             geomText +=  index === lastIndex ? `${k[0]} ${k[1]}`:`${k[0]} ${k[1]},`
+//         });
+//         let lastIndex = e.geometry.coordinates[0].length - 1;
+//         if(lastIndex !== indexJ)geomText +=  "),";
+//     });
+//     let geom = `ST_GeomFromEWKT('SRID=4326;MULTIPOLYGON((${geomText})))')`;
+//     return {
+//         key: `name,area,population,geom`,
+//         id:true,
+//         table: "districts",
+//         values: `'${e.properties.IlceAdi}', ${e.properties.Shape_Area},${e.properties.population},${geom}`
+//     }
+// })
+// console.log(xyz);
+// xyz.forEach(async e => {
+//     await Axiosinstance().post("/createRecords",e);
+// });
+// console.log("Verileri Kaydedildi...")
 
 // Mahalle poligonun a göre nokta tip kaydı
 // let result = await Axiosinstance().get("/getDistricts");
