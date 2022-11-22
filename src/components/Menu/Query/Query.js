@@ -1,11 +1,19 @@
-import React,{useContext} from 'react';
+import React,{useContext, useEffect} from 'react';
 import { AppContext } from "../../../context/AppContext";
 import { VscSync } from "react-icons/vsc";
 import { FaDrawPolygon } from "react-icons/fa";
 import "./Query.css";
 
 export default function Query(){
-    //const {setMode} = useContext(AppContext);
+    useEffect(()=>{
+        const fetchData = async () => {
+            let tableNames = await Axiosinstance().get("/getSpatialTables");
+            console.log(tableNames)
+            setTables(tableNames)
+        }
+        if(tables === null )fetchData();
+    },[])
+    const {tables,setTables,Axiosinstance} = useContext(AppContext);
     const click = e => {
         let target = e.target.localName === 'span' || e.target.localName === 'svg' ? e.target.parentNode: e.target.localName === 'path' ? e.target.parentNode.parentNode : e.target;
         let active = document.querySelector('.cbs-menu-query-tab div.active');

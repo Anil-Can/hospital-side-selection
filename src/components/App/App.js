@@ -10,6 +10,7 @@ import Menu from "../Menu/Menu";
 export default function App() {
     const[mode,setMode] = useState("");
     const[map,setMap] = useState(null);
+    const[tables,setTables] = useState(null)
     const Axiosinstance = () => {
         let controller = new AbortController();
         const instance = axios.create({
@@ -44,7 +45,10 @@ export default function App() {
     }
     return(
         <React.StrictMode>
-            <AppContext.Provider value={{mode,setMode,Axiosinstance,map,setMap}}>
+            <AppContext.Provider value={{
+                mode,setMode,Axiosinstance,map,setMap,
+                tables,setTables
+                }}>
                 <Hamburger/>
                 <Sidebar/>
                 <Map/>
