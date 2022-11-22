@@ -1,0 +1,45 @@
+
+.cbs-selected-item {
+    padding: 0.9em 0.6em;
+    width: 270px;
+    margin-left: 10px;
+    height: 25px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    gap: 1em;
+    border: 1px solid var(--surface-300);
+    box-shadow: 1px 1px 2px 1px var(--primary-color), -1px -1px 2px 1px var(--primary-color);
+}
+.cbs-selected-item svg {
+    color: var(--primary-color);
+}
+.cbs-selected-item span {
+    margin-right: auto;
+}
+.cbs-select-items{
+    display: none;
+    position: sticky;
+    width: 270px;
+    margin-left: 10px;
+    border: 1px solid var(--surface-500);
+    background-color: var(--surface-0);
+    box-shadow: 1px 1px 2px 1px var(--surface-200),-1px -1px 2px 1px var(--surface-200);
+}
+.cbs-select-items.active{
+    display: block;
+}
+.cbs-select-option {
+    display: flex;
+    align-items: center;
+    padding: 0.2em 0.4em;
+    gap: 0.4em;
+    cursor: pointer;
+    color:var(--text-color-secondary);
+}
+.cbs-select-option:hover{
+    background-color: var(--surface-200);
+}
+.cbs-select-option svg {
+    color: var(--primary-color);
+}

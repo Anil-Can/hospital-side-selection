@@ -32,7 +32,7 @@ export default function Sidebar(){
         <div className="cbs-sidebar">
             {items.map(e => {
                 return (
-                    <div className="cbs-siderbar-icon" onClick={e => click(e)}>
+                    <div key={e.text} className="cbs-siderbar-icon" onClick={e => click(e)}>
                         {e.icon}
                         <span>{e.text}</span>
                     </div>

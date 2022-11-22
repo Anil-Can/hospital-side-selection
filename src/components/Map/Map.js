@@ -36,8 +36,8 @@ export default function Map() {
     const mapContainer = useRef(null);
     const map = useRef(null);
     const popupRef = useRef(new maplibregl.Popup({closeButton:false,closeOnClick:false}));
-    const [center] = useState([29,41.12]);
-    const [zoom] = useState(15);
+    const [center] = useState([28.7,41.2]);
+    const [zoom] = useState(8.5);
 
     useEffect(() => {
         if(map.current) return;
