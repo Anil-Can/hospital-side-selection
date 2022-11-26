@@ -27,7 +27,14 @@ const pointOnTheFeature = (point,polygon,map) => {
     }
     return inside;
 }
-export {toFeature,pointOnTheFeature}
+const removeSourceandLayers = map => {
+        
+    map.getStyle().layers.filter((layer) => layer.id.startsWith('cbs-query')).forEach(layer =>{
+        map.removeLayer(layer.id)
+    });
+    if(map.getSource('cbs-query-source')) map.removeSource('cbs-query-source');
+}
+export {toFeature,pointOnTheFeature,removeSourceandLayers}
 // Mahalle Kaydı
 // let xyz = ilce.features.map(e => {
 //     let geomText = "";

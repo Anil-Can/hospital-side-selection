@@ -6,11 +6,14 @@ import "./App.css";
 import Hamburger from "../Hamburger/Hamburger";
 import Sidebar from "../Sidebar/Sidebar";
 import Menu from "../Menu/Menu";
+import BottomRight from "../BottomRight/BottomRight";
 
 export default function App() {
     const[mode,setMode] = useState("");
     const[map,setMap] = useState(null);
-    const[tables,setTables] = useState(null)
+    const[tables,setTables] = useState(null);
+    const[info,setInfo] = useState(false)
+    const[selectedTables,setSelectedTables] = useState(null);
     const Axiosinstance = () => {
         let controller = new AbortController();
         const instance = axios.create({
@@ -46,13 +49,14 @@ export default function App() {
     return(
         <React.StrictMode>
             <AppContext.Provider value={{
-                mode,setMode,Axiosinstance,map,setMap,
-                tables,setTables
+                mode,setMode,Axiosinstance,map,setMap,info,setInfo,
+                tables,setTables,selectedTables,setSelectedTables
                 }}>
                 <Hamburger/>
                 <Sidebar/>
                 <Map/>
                 <Menu/>
+                <BottomRight/>
             </AppContext.Provider>
         </React.StrictMode>
     )

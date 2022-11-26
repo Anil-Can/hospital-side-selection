@@ -1,0 +1,46 @@
+.cbs-bottom-right {
+    position: absolute;
+    bottom: 20px;
+    right: 5px;
+    display: flex;
+    gap: 0.2em;
+    align-items: flex-end;
+}
+
+.cbs-bottom {
+    display: flex;
+    align-items: center;
+    gap: 0.2em;
+}
+.cbs-bottom-right div div {
+    background-color: var(--surface-0);
+    border: 1px solid var(--primary-color);
+    cursor: pointer;
+    width: 25px;
+    height: 25px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.cbs-bottom-right div div svg {
+    color:var(--primary-color);
+}
+.cbs-right {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.2em;
+}
+#cbs-info {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    margin-bottom: -10px;
+}
+#cbs-info.enable{
+    background-color: var(--primary-color);
+}
+#cbs-info.enable svg {
+    color:var(--surface-0);
+}
