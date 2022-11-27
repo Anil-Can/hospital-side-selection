@@ -16,6 +16,7 @@ export default function App() {
     const[tables,setTables] = useState(null);
     const[info,setInfo] = useState(false)
     const[selectedTables,setSelectedTables] = useState([]);
+    const [queryDynamicTable,setQueryDynamicTable] = useState(null);
     const[properties,setProperties] = useState({})
     const Axiosinstance = () => {
         let controller = new AbortController();
@@ -54,7 +55,7 @@ export default function App() {
             <AppContext.Provider value={{
                 mode,setMode,Axiosinstance,map,setMap,info,setInfo,
                 tables,setTables,selectedTables,setSelectedTables,
-                properties,setProperties
+                queryDynamicTable,setQueryDynamicTable,properties,setProperties
                 }}>
                 <Hamburger/>
                 <Sidebar/>

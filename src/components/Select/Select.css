@@ -3,6 +3,7 @@
     padding: 0.9em 0.6em;
     width: 270px;
     margin-left: 10px;
+    margin-top: 10px;
     height: 25px;
     display: flex;
     align-items: center;
@@ -19,6 +20,8 @@
 }
 .cbs-select-items{
     display: none;
+    max-height: 200px;
+    overflow: auto;
     position: sticky;
     width: 270px;
     margin-left: 10px;

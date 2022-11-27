@@ -16,7 +16,7 @@ export default function Info () {
             <div className="cbs-info-properties">
                 {
                     Object.keys(properties).
-                        filter((key) => !key.includes('id') && !key.includes('tableName')).
+                        filter((key) => /*!key.includes('id') &&*/ !key.includes('tableName')).
                         map((key,i)=>{
                             return (
                                 <>
@@ -26,9 +26,6 @@ export default function Info () {
                             )
                     })
                 }
-                <div>
-                    <span></span>
-                </div>
             </div>
         </div>
     )

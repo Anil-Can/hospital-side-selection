@@ -8,7 +8,7 @@ import { removeSourceandLayers } from "../../utils";
 
 
 export default function BottomRight() {
-    const {map,selectedTables,setSelectedTables,info,setInfo,properties,setProperties} = useContext(AppContext);
+    const {map,selectedTables,setSelectedTables,info,setInfo,properties,setProperties,setQueryDynamicTable} = useContext(AppContext);
 
     const homeClicked = () => {
         var bbox = [
@@ -49,6 +49,7 @@ export default function BottomRight() {
         setSelectedTables([]);
         removeSourceandLayers(map);
         setInfo(false);
+        setQueryDynamicTable(null);
         setProperties({});
     };
     const infoClicked = () => {

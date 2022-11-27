@@ -1,8 +1,7 @@
-import React,{useContext, useEffect} from 'react';
+import React,{useContext, useEffect,useState} from 'react';
 import { AppContext } from "../../../context/AppContext";
-import { VscSync } from "react-icons/vsc";
 import { FiGitCommit } from "react-icons/fi";
-import { VscLocation } from "react-icons/vsc";
+import { VscLocation,VscFilter,VscChecklist } from "react-icons/vsc";
 import { FaDrawPolygon } from "react-icons/fa";
 import { useTranslation } from 'react-i18next';
 import "./Query.css";
@@ -10,7 +9,10 @@ import Select from '../../Select/Select';
 import { removeSourceandLayers } from '../../../utils';
 export default function Query(){
     const { t } = useTranslation();
-    const {tables,setTables,map,Axiosinstance,setSelectedTables} = useContext(AppContext);
+    const {tables,setTables,map,Axiosinstance,setSelectedTables,queryDynamicTable,setQueryDynamicTable} = useContext(AppContext);
+    const [queryMode,setQuerymode] = useState("query-dynamic");
+    const [districts,setDistricts] = useState([])
+    
     useEffect(()=>{
         const fetchData = async () => {
             let tableNames = await Axiosinstance().get("/getSpatialTables");
@@ -35,6 +37,7 @@ export default function Query(){
         let active = document.querySelector('.cbs-menu-query-tab div.active');
         if(active !== null && active !== target) active.classList.toggle('active');
         if(!target.classList.contains('active')) {
+            setQuerymode(target.id)
             target.classList.toggle('active');
         }
     }
@@ -145,29 +148,82 @@ export default function Query(){
         }
         
     }
-    const selectedItem = async tableName => {
-        let source = await Axiosinstance().get(`/getFeatures?tableName=${tableName}`);
-        let index = tables.findIndex(e => e.id === tableName);
+    const selectedItem = async (id,name) => {
+        if(queryDynamicTable === null || (queryDynamicTable.name !== name && isNaN(name)) )
+        {
+            const {source,attributes} = await Axiosinstance().get(`/getFeatures?tableName=${name}`);
+            let index = tables.findIndex(e => e.id === name);
+            
+            setQueryDynamicTable({
+                name:name,
+                count:source.features.length,
+                source:{...source},
+                attributes:attributes,
+                type:tables[index].geom,
+            });
+            if(name !== 'districts')
+            {
+                let result = await Axiosinstance().get("/getDistricts");
+                setDistricts(()=>{
+                    return result.map(e => {
+                        return{
+                            id:e.id,
+                            item:<span>{e.name}</span>
+                        }
+                    })
+                });
+            }
+        }
+        else if(queryDynamicTable !== null && queryDynamicTable.name !== 'districts')
+        {
+            let attribute = id.split('-')[1];
+            if(attribute === 'districts')
+            {
+                let where = `district_id = ${name}`
+                const {source} = await Axiosinstance().get(`/getFeatures?tableName=${queryDynamicTable.name}&where=${where}&joinAtt=water_id`);
+                setQueryDynamicTable({...queryDynamicTable,  
+                    count:source.features.length,source:{...source}})
+            }
+        }
+    }
+    const renderLayer = () => {
         removeSourceandLayers(map);
-        setSelectedTables([tables[index].id]);
-        addSource(source,tables[index].geom);
-        addLayers(tables[index].geom,tableName);
+        setSelectedTables([queryDynamicTable.name]);
+        addSource(queryDynamicTable.source,queryDynamicTable.type);
+        addLayers(queryDynamicTable.type,queryDynamicTable.name);
     }
     return (
         <div className='cbs-menu-query'>
             <div className='cbs-menu-query-tab'>
-                <div className='active' id="query-normal" onClick={e => click(e)}>
-                    <VscSync/>
-                    <span>Normal</span>
-                </div>
-                <div id="query-spatial" onClick={e => click(e)}>
-                    <FaDrawPolygon/>
-                    <span>Mekansal</span>
+                {/* <div id="query-ready" onClick={e => click(e)}>
+                    <VscCheck/>
+                    <span>Hazır</span>
+                </div> */}
+                <div className='active' id="query-dynamic" onClick={e => click(e)}>
+                    <VscChecklist/>
+                    <span>Dinamik</span>
                 </div>
             </div>
             <hr/>
             {tables !== null && 
-                <Select options={tables} selectedItem={selectedItem}/>
+                <>
+                {queryMode === 'query-ready' ?
+                    <Select id={"test"} options={tables} selectedItem={selectedItem}/>:
+                    <>
+                        <Select id={"test2"} options={tables} selectedItem={selectedItem}/>
+                        {queryDynamicTable !== null &&
+                            <>
+                            <Select id={`filter-districts`} options={districts} selectedItem={selectedItem}/>
+                            <div className='query-count'>
+                                <button onClick={renderLayer}>Haritaya Ekle</button>
+                                <VscFilter/>
+                                <span>{queryDynamicTable.count}</span>
+                            </div>
+                            </>
+                        }
+                    </>
+                }
+                </>
             }
         </div>
     )

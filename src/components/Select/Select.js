@@ -1,16 +1,18 @@
 import React, {useState} from 'react';
 import { VscChevronDown } from "react-icons/vsc";
 import "./Select.css";
-export default function Select ({options,selectedItem}){
+export default function Select ({id,options,selectedItem}){
     const [index,setIndex] = useState(null);
     const toggle = () => {
-        document.querySelector('.cbs-select-items').classList.toggle('active');
+        document.querySelector(`#${id}`).classList.toggle('active');
     }
     const change = e => {
-        document.querySelector('.cbs-select-items').classList.toggle('active');
+        document.querySelector(`#${id}`).classList.toggle('active');
         let target = e.target.localName === 'svg' || e.target.localName === 'span' ? e.target.parentNode: e.target.localName === 'path' ?  e.target.parentNode.parentNode:e.target;
-        setIndex(options.findIndex(j => j.id === target.dataset.value));
-        selectedItem(target.dataset.value);
+        let optionIndex = options.findIndex(j => j.id == target.dataset.value);
+        console.log(optionIndex)
+        setIndex(optionIndex);
+        selectedItem(id,target.dataset.value);
     }
     return (
         <div className='cbs-selectbox'>
@@ -18,7 +20,7 @@ export default function Select ({options,selectedItem}){
                 {index !== null && options[index].item}
                 <VscChevronDown/>
             </div>
-            <div className="cbs-select-items">
+            <div className="cbs-select-items" id={id}>
                 {options.map(e => {
                     return (
                         <div key ={e.id} className='cbs-select-option' onClick={j => change(j)} data-value={e.id}>

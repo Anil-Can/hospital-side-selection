@@ -25,3 +25,31 @@
 .cbs-menu-query-tab div.active svg, .cbs-menu-query-tab div.active span {
     color: var(--primary-color);
 }
+.query-count {
+    position: absolute;
+    bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    width: 100%;
+    padding-right: 20px;
+}
+.query-count button {
+    padding: 0.4em 0.6em;
+    margin-left: auto;
+    margin-right: auto;
+    border: 1px solid var(--primary-color);
+    background-color: var(--surface-a);
+    color: var(--primary-color);
+    cursor: pointer;
+    transition: 1s;
+}
+.query-count button:hover{
+    border: 1px solid var(--surface-100);
+    background-color: var(--primary-color);
+    color: var(--surface-100);
+}
+.query-count svg {
+    margin-left: auto;
+    color: var(--primary-color);
+}
