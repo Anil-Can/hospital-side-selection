@@ -7,6 +7,7 @@ import Hamburger from "../Hamburger/Hamburger";
 import Sidebar from "../Sidebar/Sidebar";
 import Menu from "../Menu/Menu";
 import BottomRight from "../BottomRight/BottomRight";
+import "../../i18"
 
 export default function App() {
     const[mode,setMode] = useState("");

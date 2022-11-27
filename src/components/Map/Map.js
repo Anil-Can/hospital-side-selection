@@ -1,11 +1,10 @@
 import React,{useState,useEffect,useRef, useContext} from "react";
-import ReactDOM from "react-dom";
 import maplibregl from 'maplibre-gl';
 import { AppContext } from "../../context/AppContext";
 import "./Map.css";
 
 export default function Map() {
-    const {mode,instance,setMap} = useContext(AppContext);
+    const {setMap} = useContext(AppContext);
     const isMobile = document.body.offsetWidth > 600 ? false : true;
     const mapStyle = {
         id: "O_SM",
@@ -35,7 +34,6 @@ export default function Map() {
     }
     const mapContainer = useRef(null);
     const map = useRef(null);
-    const popupRef = useRef(new maplibregl.Popup({closeButton:false,closeOnClick:false}));
     const [center] = useState([28.7,41.2]);
     const [zoom] = useState(8.5);
 
@@ -48,9 +46,6 @@ export default function Map() {
             zoom: zoom,
         });
         setMap(map.current);
-        var hoveredStateId = null;
-        map.current.on('load', ()=> {
-        });
     });
     return (
         <>

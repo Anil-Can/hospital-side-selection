@@ -1,4 +1,4 @@
-import React,{useContext} from "react";
+import React,{useContext, useEffect} from "react";
 import "./BottomRight.css";
 import { AppContext } from "../../context/AppContext";
 import { VscAdd,VscChromeMinimize } from "react-icons/vsc";
@@ -8,7 +8,7 @@ import { removeSourceandLayers } from "../../utils";
 
 
 export default function BottomRight() {
-    const {map,setSelectedTables,setInfo} = useContext(AppContext);
+    const {map,selectedTables,setSelectedTables,setInfo} = useContext(AppContext);
 
     const homeClicked = () => {
         var bbox = [
@@ -19,6 +19,20 @@ export default function BottomRight() {
         padding: {top: 10, bottom:25, left: 15, right: 5}
         });
     };
+
+    // Info açıkken başka sorgu yapılırsa click eventini güncelle
+    useEffect(()=>{
+        if(map !== null && map.getCanvas().onclick !== null) map.getCanvas().onclick = featureClicked;
+    },[selectedTables])
+    const featureClicked = (e) => {
+        let layers = selectedTables.map(j => {
+            return map.getStyle().layers.filter((layer) => layer.id.includes(j))[0].id
+        })
+        const features = map.queryRenderedFeatures([e.x, e.y], {
+            layers: [...layers],
+        });
+        console.log(features);
+    }
     const trashClicked = () => {
         let infoElem = document.querySelector('#cbs-info')
         if(infoElem.classList.contains('enable'))infoElem.classList.remove('enable');
@@ -32,11 +46,13 @@ export default function BottomRight() {
         if(document.querySelector('#cbs-info').classList.contains('enable'))
         {
             map.getCanvas().style.cursor = "crosshair";
+            map.getCanvas().onclick = featureClicked;
             setInfo(true);
         }
         else
         {
             map.getCanvas().style.cursor = "default";
+            map.getCanvas().onclick = null;
             setInfo(false);
         }
     }
