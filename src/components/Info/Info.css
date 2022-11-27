@@ -1,0 +1,43 @@
+.cbs-info {
+    position: absolute;
+    right: -500px;
+    bottom: 20px;
+    z-index: 20;
+    transition: 1.5s;
+}
+.cbs-info.active{
+    right: 2px;
+}
+.cbs-info-header {
+    display: flex;
+    align-items: center;
+    background-color: var(--primary-color);
+    padding: 0.5em 0.7em;
+}
+.cbs-info-header span{
+    color: var(--surface-0);
+    font-size: 1.1em;
+    font-weight: bold;
+}
+.cbs-info-header svg{
+    color: var(--surface-0);
+    margin-left: auto;
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+}
+.cbs-info-properties {
+    /* padding-top: 10px;
+    background-color: var(--surface-0); */
+    display: grid;
+    grid-template-columns: 1fr 3fr;
+}
+.cbs-info-properties div {
+    padding: 0.2em 0.3em;
+}
+.cbs-info-properties div:nth-child(-n+2),.cbs-info-properties div:nth-child(n+5):nth-child(-n+6){
+    background-color: var(--surface-300);
+}
+.cbs-info-properties div:nth-child(n+3):nth-child(-n+4){
+    background-color: var(--surface-0);
+}

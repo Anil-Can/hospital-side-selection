@@ -4,21 +4,22 @@ import { VscSync } from "react-icons/vsc";
 import { FiGitCommit } from "react-icons/fi";
 import { VscLocation } from "react-icons/vsc";
 import { FaDrawPolygon } from "react-icons/fa";
+import { useTranslation } from 'react-i18next';
 import "./Query.css";
 import Select from '../../Select/Select';
 import { removeSourceandLayers } from '../../../utils';
 export default function Query(){
-    
+    const { t } = useTranslation();
     const {tables,setTables,map,Axiosinstance,setSelectedTables} = useContext(AppContext);
     useEffect(()=>{
         const fetchData = async () => {
             let tableNames = await Axiosinstance().get("/getSpatialTables");
             tableNames = tableNames.map(e => {
                 let item = e.geom_type === 'Polygon' ? 
-                <><FaDrawPolygon/><span>{e.display_name}</span></>:
+                <><FaDrawPolygon/><span>{ t(`${e.name}`)}</span></>:
                 e.geom_type === 'Point' ?
-                <><VscLocation/><span>{e.display_name}</span></>:
-                <><FiGitCommit/><span>{e.display_name}</span></>
+                <><VscLocation/><span>{ t(`${e.name}`)}</span></>:
+                <><FiGitCommit/><span>{ t(`${e.name}`)}</span></>
                 return {
                     id: e.name,
                     geom:e.geom_type,

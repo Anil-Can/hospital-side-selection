@@ -8,7 +8,7 @@ import { removeSourceandLayers } from "../../utils";
 
 
 export default function BottomRight() {
-    const {map,selectedTables,setSelectedTables,setInfo} = useContext(AppContext);
+    const {map,selectedTables,setSelectedTables,info,setInfo,properties,setProperties} = useContext(AppContext);
 
     const homeClicked = () => {
         var bbox = [
@@ -19,7 +19,12 @@ export default function BottomRight() {
         padding: {top: 10, bottom:25, left: 15, right: 5}
         });
     };
-
+    useEffect(()=>{
+        if(info && Object.keys(properties).length !== 0){
+            let infoElem = document.querySelector('.cbs-info');
+            if(!infoElem.classList.contains('active')) infoElem.classList.toggle('active');
+        }
+    },[properties])
     // Info açıkken başka sorgu yapılırsa click eventini güncelle
     useEffect(()=>{
         if(map !== null && map.getCanvas().onclick !== null) map.getCanvas().onclick = featureClicked;
@@ -31,7 +36,11 @@ export default function BottomRight() {
         const features = map.queryRenderedFeatures([e.x, e.y], {
             layers: [...layers],
         });
-        console.log(features);
+        if(features.length) {
+            let layerId = features[0].layer.id;
+            let index = selectedTables.findIndex(j => layerId.includes(j)) 
+            setProperties({...features[0].properties,tableName:selectedTables[index]})
+        }
     }
     const trashClicked = () => {
         let infoElem = document.querySelector('#cbs-info')
@@ -40,6 +49,7 @@ export default function BottomRight() {
         setSelectedTables([]);
         removeSourceandLayers(map);
         setInfo(false);
+        setProperties({});
     };
     const infoClicked = () => {
         document.querySelector('#cbs-info').classList.toggle('enable');
