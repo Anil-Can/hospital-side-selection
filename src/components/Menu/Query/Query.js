@@ -17,6 +17,12 @@ export default function Query(){
         const fetchData = async () => {
             let tableNames = await Axiosinstance().get("/getSpatialTables");
             tableNames = tableNames.map(e => {
+                let relation = {}
+                if(e.related){
+                    let list = e.related.split("|");
+                    relation.table = list[0];
+                    if( e.geom_type !== 'Point') relation.field = list[1];
+                }
                 let item = e.geom_type === 'Polygon' ? 
                 <><FaDrawPolygon/><span>{ t(`${e.name}`)}</span></>:
                 e.geom_type === 'Point' ?
@@ -25,7 +31,8 @@ export default function Query(){
                 return {
                     id: e.name,
                     geom:e.geom_type,
-                    item: item
+                    item: item,
+                    relation:relation
                 }
             });
             setTables(tableNames)
@@ -160,6 +167,7 @@ export default function Query(){
                 source:{...source},
                 attributes:attributes,
                 type:tables[index].geom,
+                ...(tables[index].geom !== 'Point',{joinAtt:tables[index].relation.field})
             });
             if(name !== 'districts')
             {
@@ -180,7 +188,7 @@ export default function Query(){
             if(attribute === 'districts')
             {
                 let where = `district_id = ${name}`
-                const {source} = await Axiosinstance().get(`/getFeatures?tableName=${queryDynamicTable.name}&where=${where}&joinAtt=water_id`);
+                const {source} = await Axiosinstance().get(`/getFeatures?tableName=${queryDynamicTable.name}&where=${where}&joinAtt=${queryDynamicTable.joinAtt}`);
                 setQueryDynamicTable({...queryDynamicTable,  
                     count:source.features.length,source:{...source}})
             }
@@ -213,7 +221,9 @@ export default function Query(){
                         <Select id={"test2"} options={tables} selectedItem={selectedItem}/>
                         {queryDynamicTable !== null &&
                             <>
+                            {queryDynamicTable.name !== 'districts' && 
                             <Select id={`filter-districts`} options={districts} selectedItem={selectedItem}/>
+                            }
                             <div className='query-count'>
                                 <button onClick={renderLayer}>Haritaya Ekle</button>
                                 <VscFilter/>

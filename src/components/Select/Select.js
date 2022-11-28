@@ -10,7 +10,6 @@ export default function Select ({id,options,selectedItem}){
         document.querySelector(`#${id}`).classList.toggle('active');
         let target = e.target.localName === 'svg' || e.target.localName === 'span' ? e.target.parentNode: e.target.localName === 'path' ?  e.target.parentNode.parentNode:e.target;
         let optionIndex = options.findIndex(j => j.id == target.dataset.value);
-        console.log(optionIndex)
         setIndex(optionIndex);
         selectedItem(id,target.dataset.value);
     }
