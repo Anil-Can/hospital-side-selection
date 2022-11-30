@@ -5,9 +5,6 @@ module.exports = {
     entry: {
         bundle: path.resolve(__dirname,"src/index.js"),
     },
-    performance: {
-        hints: false,
-    },
     devServer :{
         static:{
             directory: path.resolve(__dirname, "./")

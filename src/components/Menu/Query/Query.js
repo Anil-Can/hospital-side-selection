@@ -158,6 +158,7 @@ export default function Query(){
     const selectedItem = async (id,name) => {
         if(queryDynamicTable === null || (queryDynamicTable.name !== name && isNaN(name)) )
         {
+            setQueryDynamicTable(null)
             const {source,attributes} = await Axiosinstance().get(`/getFeatures?tableName=${name}`);
             let index = tables.findIndex(e => e.id === name);
             
