@@ -35,7 +35,7 @@ const removeSourceandLayers = map => {
     if(map.getSource('cbs-query-source')) map.removeSource('cbs-query-source');
 }
 export {toFeature,pointOnTheFeature,removeSourceandLayers}
-// Mahalle Kaydı
+// TODO Mahalle Kaydı
 // let xyz = ilce.features.map(e => {
 //     let geomText = "";
 //     e.geometry.coordinates[0].forEach((j,indexJ) => {
@@ -61,7 +61,7 @@ export {toFeature,pointOnTheFeature,removeSourceandLayers}
 // });
 // console.log("Verileri Kaydedildi...")
 
-// Mahalle poligonun a göre nokta tip kaydı
+// TODO Mahalle poligonun a göre nokta tip kaydı
 // let result = await Axiosinstance().get("/getDistricts");
 //         let xyz = saglik.features.map(e => {
 //             let district_id = -1;
@@ -86,7 +86,7 @@ export {toFeature,pointOnTheFeature,removeSourceandLayers}
 //             Axiosinstance().post("/createRecords",e);
 //         })
 //         console.log("Veriler kaydedildi...");
-/*land use*/
+// TODO land use
 // let result = await Axiosinstance().get("/getDistricts");
 //         let xyz = landuse.features.map(e => {
 //             let geomText = "";
@@ -132,7 +132,7 @@ export {toFeature,pointOnTheFeature,removeSourceandLayers}
 //         });
 //         console.log("Verileri Kaydedildi...")
 
-/*Railway ve road*/ 
+// TODO Railway ve road 
 // let result = await Axiosinstance().get("/getDistricts");
 //         let xyz = railway.features.map(e => {
 //             let geomText = "";
@@ -175,3 +175,80 @@ export {toFeature,pointOnTheFeature,removeSourceandLayers}
 //             }
 //         });
 //         console.log("Verileri Kaydedildi...");
+
+// TODO Analiz Poligon Ekleme
+
+// let result = await Axiosinstance().get(`/getFeatures?tableName=districts`);
+//         let filter = risk.features.slice(2090,);
+//         console.log(risk.features.length);
+//         let xyz = filter.map(e => {
+//             let geomText = "";
+//             e.geometry.coordinates[0].forEach(j => {
+//                 geomText +=  `${j[0]} ${j[1]},`
+//             })
+//             geomText = geomText.slice(0, -1)
+//             let geom = `ST_GeomFromEWKT('SRID=4326;POLYGON((${geomText}))')`;
+//             let district_ids = [];
+//             result.source.features.forEach(j => {
+//                 let polyIntersect = intersect(e,j);
+//                 if(polyIntersect !==null ) district_ids.push(j.properties.id);
+//             })
+//             return {
+//                 district_ids : district_ids,
+//                 key: `risk,geom`,
+//                 id:true,
+//                 table: "flood_risk",
+//                 values: `${e.properties.DN},${geom}`
+//             }
+//         });
+//         console.log("Verileri Kaydediliyor...");
+//         xyz.forEach(async e => {
+//             let flood_risk_id =  await Axiosinstance().post("/createRecords",e);
+//             for await (const district_id of  e.district_ids) {
+//                 const injData = {
+//                     key: `district_id,flood_risk_id`,
+//                     table: "districts_flood_risk",
+//                     values: `${district_id}, ${parseInt(flood_risk_id)}`
+//                 };
+//                 await Axiosinstance().post("/createRecords",injData);
+//             }
+//         });
+//         console.log("Verileri Kaydedildi...")
+// TODO Analiz Çizgi Ekleme
+// let result = await Axiosinstance().get(`/getFeatures?tableName=districts`);
+//         let filter = short.features.slice(800,859);
+//         console.log(short.features.length);
+//         let xyz = filter.map(e => {
+//             let geomText = "";
+//             let district_ids = [];
+//             e.geometry.coordinates.forEach(j => {
+//                 geomText +=  `${j[0]} ${j[1]},`
+//                 result.source.features.forEach(k => {
+//                     if(pointOnTheFeature(j,k,map) && district_ids.indexOf(k.properties.id) === -1) district_ids.push(k.properties.id);
+//                 })
+//             })
+//             geomText = geomText.slice(0, -1)
+//             let geom = `ST_GeomFromEWKT('SRID=4326;LINESTRING(${geomText})')`;
+            
+            
+//             return {
+//                 district_ids : district_ids,
+//                 key: `cost,geom`,
+//                 id:true,
+//                 table: "shortest_path",
+//                 values: `${e.properties.cost},${geom}`
+//             }
+//         });
+//         console.log("Verileri Kaydediliyor...");
+//         xyz.forEach(async e => {
+//             let shortest_path_id =  await Axiosinstance().post("/createRecords",e);
+//             for await (const district_id of  e.district_ids) {
+//                 const injData = {
+//                     key: `district_id,shortest_path_id`,
+//                     table: "districts_shortest_path",
+//                     values: `${district_id}, ${parseInt(shortest_path_id)}`
+//                 };
+//                 await Axiosinstance().post("/createRecords",injData);
+//             }
+//         });
+//         console.log("Verileri Kaydedildi...")
