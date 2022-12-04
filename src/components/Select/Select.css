@@ -22,7 +22,7 @@
     display: none;
     max-height: 200px;
     overflow: auto;
-    position: sticky;
+    position: fixed;
     width: 270px;
     margin-left: 10px;
     border: 1px solid var(--surface-500);

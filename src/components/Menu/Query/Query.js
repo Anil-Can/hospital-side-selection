@@ -12,6 +12,7 @@ export default function Query(){
     const {tables,setTables,map,Axiosinstance,setSelectedTables,queryDynamicTable,setQueryDynamicTable} = useContext(AppContext);
     const [queryMode,setQuerymode] = useState("query-dynamic");
     const [districts,setDistricts] = useState([])
+    const [classes,setClasses] = useState([]);
     
     useEffect(()=>{
         const fetchData = async () => {
@@ -155,8 +156,28 @@ export default function Query(){
         }
         
     }
+    const whereSQL = (old,attribute,value) =>  {
+        let newState = "";
+        if(old)
+        {
+            let states = old.split("|").slice(0, -1);
+            let index = states.findIndex(e => e.includes(attribute));
+            states.forEach((e,i)=>{
+                if(isNaN(value)) newState += i === index ? `${attribute} = '${value}'|`:`${e}|`;
+                else  newState += i === index ? `${attribute} = ${value}|`:`${e}|`;
+                
+
+            })
+            if(index === -1) newState += isNaN(value) ?`${attribute} = '${value}'|`:`${attribute} = ${value}|`;
+        }
+        else
+        {
+            newState += isNaN(value) ?`${attribute} = '${value}'|`:`${attribute} = ${value}|`;
+        }
+        return newState;
+    }
     const selectedItem = async (id,name) => {
-        if(queryDynamicTable === null || (queryDynamicTable.name !== name && isNaN(name)) )
+        if(queryDynamicTable === null || (queryDynamicTable.name !== name && isNaN(name) && !id.includes('class')) )
         {
             setQueryDynamicTable(null)
             const {source,attributes} = await Axiosinstance().get(`/getFeatures?tableName=${name}`);
@@ -173,6 +194,15 @@ export default function Query(){
             if(name !== 'districts')
             {
                 let result = await Axiosinstance().get("/getDistricts");
+                let classes = await Axiosinstance().get(`/getCategories?name=class&tableName=${name}`);
+                setClasses(()=>{
+                    return classes.map(e => {
+                        return{
+                            id:e.class,
+                            item:<span>{e.class}</span>
+                        }
+                    })
+                })
                 setDistricts(()=>{
                     return result.map(e => {
                         return{
@@ -186,13 +216,17 @@ export default function Query(){
         else if(queryDynamicTable !== null && queryDynamicTable.name !== 'districts')
         {
             let attribute = id.split('-')[1];
-            if(attribute === 'districts')
-            {
-                let where = `district_id = ${name}`
-                const {source} = await Axiosinstance().get(`/getFeatures?tableName=${queryDynamicTable.name}&where=${where}&joinAtt=${queryDynamicTable.joinAtt}`);
-                setQueryDynamicTable({...queryDynamicTable,  
-                    count:source.features.length,source:{...source}})
-            }
+            let newwhere = attribute === 'districts' ? whereSQL(queryDynamicTable.where,"district_id",name):
+            whereSQL(queryDynamicTable.where,"class",name);
+            let sqlWhere = "";
+            let wherelist = [...newwhere.split("|")].slice(0, -1);
+            let lastIndex = wherelist.length -1;
+            wherelist.forEach((e,i)=>{
+                sqlWhere += i === lastIndex ? `${e}`:`${e} AND `;
+            })
+            const {source} = await Axiosinstance().get(`/getFeatures?tableName=${queryDynamicTable.name}&where=${sqlWhere}&joinAtt=${queryDynamicTable.joinAtt}`);
+            setQueryDynamicTable({...queryDynamicTable,  
+                count:source.features === null ? 0:source.features.length,source:{...source},where:newwhere})
         }
     }
     const renderLayer = () => {
@@ -223,10 +257,15 @@ export default function Query(){
                         {queryDynamicTable !== null &&
                             <>
                             {queryDynamicTable.name !== 'districts' && 
+                            <>
                             <Select id={`filter-districts`} options={districts} selectedItem={selectedItem}/>
+                            <Select id={`filter-class`} options={classes} selectedItem={selectedItem}/>
+                            </>
                             }
                             <div className='query-count'>
+                                {queryDynamicTable.count > 0 &&
                                 <button onClick={renderLayer}>Haritaya Ekle</button>
+                                }
                                 <VscFilter/>
                                 <span>{queryDynamicTable.count}</span>
                             </div>
