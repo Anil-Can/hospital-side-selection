@@ -4,6 +4,7 @@ import { AppContext } from "../../context/AppContext";
 import "./Menu.css";
 import Query from './Query/Query';
 import { useTranslation } from 'react-i18next';
+import Analysis from './Analysis/Analysis';
 
 
 function Menu() {
@@ -15,6 +16,9 @@ function Menu() {
             { mode === t('query') &&
                 <Query/>
             }
+            { mode ===t('analysis') &&
+                <Analysis/>
+            }   
         </div>
     );
 }

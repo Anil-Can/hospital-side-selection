@@ -16,7 +16,7 @@ export default function Info () {
             <div className="cbs-info-properties">
                 {
                     Object.keys(properties).
-                        filter((key) => /*!key.includes('id') &&*/ !key.includes('tableName')).
+                        filter((key) => !key.includes('id') && !key.includes('tableName') && !key.includes('district_id')).
                         map((key,i)=>{
                             return (
                                 <>

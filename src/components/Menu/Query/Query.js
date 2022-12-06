@@ -1,12 +1,10 @@
 import React,{useContext, useEffect,useState} from 'react';
 import { AppContext } from "../../../context/AppContext";
-import { FiGitCommit } from "react-icons/fi";
-import { VscLocation,VscFilter,VscChecklist } from "react-icons/vsc";
-import { FaDrawPolygon } from "react-icons/fa";
+import { VscFilter,VscChecklist } from "react-icons/vsc";
 import { useTranslation } from 'react-i18next';
 import "./Query.css";
 import Select from '../../Select/Select';
-import { removeSourceandLayers } from '../../../utils';
+import { removeSourceandLayers,whereSQL,fetchData } from '../../../utils';
 export default function Query(){
     const { t } = useTranslation();
     const {tables,setTables,map,Axiosinstance,setSelectedTables,queryDynamicTable,setQueryDynamicTable} = useContext(AppContext);
@@ -15,30 +13,12 @@ export default function Query(){
     const [classes,setClasses] = useState([]);
     
     useEffect(()=>{
-        const fetchData = async () => {
-            let tableNames = await Axiosinstance().get("/getSpatialTables");
-            tableNames = tableNames.map(e => {
-                let relation = {}
-                if(e.related){
-                    let list = e.related.split("|");
-                    relation.table = list[0];
-                    if( e.geom_type !== 'Point') relation.field = list[1];
-                }
-                let item = e.geom_type === 'Polygon' ? 
-                <><FaDrawPolygon/><span>{ t(`${e.name}`)}</span></>:
-                e.geom_type === 'Point' ?
-                <><VscLocation/><span>{ t(`${e.name}`)}</span></>:
-                <><FiGitCommit/><span>{ t(`${e.name}`)}</span></>
-                return {
-                    id: e.name,
-                    geom:e.geom_type,
-                    item: item,
-                    relation:relation
-                }
-            });
-            setTables(tableNames)
+        if(tables === null )
+        {
+            fetchData("query",Axiosinstance,t).then(e =>{
+                setTables(e);
+            })
         }
-        if(tables === null )fetchData();
     },[])
     const click = e => {
         let target = e.target.localName === 'span' || e.target.localName === 'svg' ? e.target.parentNode: e.target.localName === 'path' ? e.target.parentNode.parentNode : e.target;
@@ -156,26 +136,7 @@ export default function Query(){
         }
         
     }
-    const whereSQL = (old,attribute,value) =>  {
-        let newState = "";
-        if(old)
-        {
-            let states = old.split("|").slice(0, -1);
-            let index = states.findIndex(e => e.includes(attribute));
-            states.forEach((e,i)=>{
-                if(isNaN(value)) newState += i === index ? `${attribute} = '${value}'|`:`${e}|`;
-                else  newState += i === index ? `${attribute} = ${value}|`:`${e}|`;
-                
-
-            })
-            if(index === -1) newState += isNaN(value) ?`${attribute} = '${value}'|`:`${attribute} = ${value}|`;
-        }
-        else
-        {
-            newState += isNaN(value) ?`${attribute} = '${value}'|`:`${attribute} = ${value}|`;
-        }
-        return newState;
-    }
+    
     const selectedItem = async (id,name) => {
         if(queryDynamicTable === null || (queryDynamicTable.name !== name && isNaN(name) && !id.includes('class')) )
         {
