@@ -13,6 +13,7 @@ export default function Query(){
     const [classes,setClasses] = useState([]);
     
     useEffect(()=>{
+        setQueryDynamicTable(null);
         if(tables === null )
         {
             fetchData("query",Axiosinstance,t).then(e =>{
@@ -188,7 +189,7 @@ export default function Query(){
             const {source} = await Axiosinstance().get(`/getFeatures?tableName=${queryDynamicTable.name}&where=${sqlWhere}&joinAtt=${queryDynamicTable.joinAtt}`);
             setQueryDynamicTable({...queryDynamicTable,  
                 count:source.features === null ? 0:source.features.length,source:{...source},where:newwhere})
-        }
+            }
     }
     const renderLayer = () => {
         removeSourceandLayers(map);

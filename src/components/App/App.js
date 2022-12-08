@@ -14,6 +14,8 @@ export default function App() {
     const[mode,setMode] = useState("");
     const[map,setMap] = useState(null);
     const[tables,setTables] = useState(null);
+    const[analysis,setAnalysis] = useState(null);
+    const[analysisDynamicTable,setAnalysisDynamicTable]  = useState(null);
     const[info,setInfo] = useState(false)
     const[selectedTables,setSelectedTables] = useState([]);
     const [queryDynamicTable,setQueryDynamicTable] = useState(null);
@@ -55,7 +57,8 @@ export default function App() {
             <AppContext.Provider value={{
                 mode,setMode,Axiosinstance,map,setMap,info,setInfo,
                 tables,setTables,selectedTables,setSelectedTables,
-                queryDynamicTable,setQueryDynamicTable,properties,setProperties
+                queryDynamicTable,setQueryDynamicTable,properties,setProperties,
+                analysis,setAnalysis,analysisDynamicTable,setAnalysisDynamicTable
                 }}>
                 <Hamburger/>
                 <Sidebar/>

@@ -36,7 +36,11 @@ const removeSourceandLayers = map => {
     map.getStyle().layers.filter((layer) => layer.id.startsWith('cbs-query')).forEach(layer =>{
         map.removeLayer(layer.id)
     });
+    map.getStyle().layers.filter((layer) => layer.id.startsWith('cbs-analysis')).forEach(layer =>{
+        map.removeLayer(layer.id)
+    });
     if(map.getSource('cbs-query-source')) map.removeSource('cbs-query-source');
+    if(map.getSource('cbs-analysis-source')) map.removeSource('cbs-analysis-source');
 }
 const whereSQL = (old,attribute,value) =>  {
     let newState = "";
