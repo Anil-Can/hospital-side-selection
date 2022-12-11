@@ -23,7 +23,7 @@ export default function App() {
     const Axiosinstance = () => {
         let controller = new AbortController();
         const instance = axios.create({
-            baseURL: '//localhost:3001/',
+            baseURL: '//gis.project.test/api/',
             signal: controller.signal,
         })
         const get = (url = "", params = {}) => {

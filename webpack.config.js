@@ -14,6 +14,7 @@ module.exports = {
         open:true,
         hot:true,
         compress:true,
+        allowedHosts: "all"
     },
     watchOptions: {
         aggregateTimeout: 500, // delay before reloading
