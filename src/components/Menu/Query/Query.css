@@ -7,7 +7,7 @@
     align-items: center;
 }
 .cbs-menu-query-tab div {
-    width: 100px;
+    width: calc(100%/2);
     display: flex;
     align-items: center;
     gap: 0.5em;
@@ -16,7 +16,6 @@
 }
 .cbs-menu-query-tab div.active {
     /* box-shadow: 1px 1px 3px 1px var(--primary-color),-1px -1px 3px 1px var(--primary-color); */
-    border: 3px solid #a6d5fa;
     border-radius: 3px;
 }
 .cbs-menu-query-tab div svg, .cbs-menu-query-tab div span {
@@ -24,6 +23,18 @@
 }
 .cbs-menu-query-tab div.active svg, .cbs-menu-query-tab div.active span {
     color: var(--primary-color);
+}
+.cbs-tab-indicator {
+    position: relative;
+    width: calc(100%/2);
+    height: 2px;
+    border-radius: 2px;
+    transition: .5s;
+    background-color: var(--primary-color);
+    left: 0px;
+}
+.cbs-tab-indicator[data-value="query-geom"] {
+    left: calc(100%/2);
 }
 .query-count {
     position: absolute;
@@ -52,4 +63,31 @@
 .query-count svg {
     margin-left: auto;
     color: var(--primary-color);
+}
+.cbs-geom-polygon {
+    display: flex;
+    align-items: center;
+    margin-top: 20px;
+}
+.cbs-geom-polygon div {
+    width: calc(100% / 2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 4px;
+}
+.cbs-geom-polygon div div {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    background-color: var(--primary-color);
+}
+.cbs-geom-polygon div div svg {
+    color: var(--surface-a);
+    font-size: 1.5rem;
+}
+.cbs-geom-polygon div span {
+    color: var(--text-color-secondary)
 }

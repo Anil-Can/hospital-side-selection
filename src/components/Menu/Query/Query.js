@@ -1,16 +1,23 @@
-import React,{useContext, useEffect,useState} from 'react';
-import { AppContext } from "../../../context/AppContext";
-import { VscFilter,VscChecklist } from "react-icons/vsc";
-import { useTranslation } from 'react-i18next';
 import "./Query.css";
 import Select from '../../Select/Select';
-import { removeSourceandLayers,whereSQL,fetchData } from '../../../utils';
+import { FaDrawPolygon } from "react-icons/fa";
+import { useTranslation } from 'react-i18next';
+import { pointOnTheFeature } from "../../../utils";
+import { default as intersect } from "@turf/intersect"
+import { AppContext } from "../../../context/AppContext";
+import { VscFilter,VscChecklist } from "react-icons/vsc";
+import { BiShapePolygon,BiUpload } from "react-icons/bi";
+import React,{useContext, useEffect,useState} from 'react';
+import { removeSourceandLayers,whereSQL,fetchData,addOutlineLayer } from '../../../utils';
+
 export default function Query(){
     const { t } = useTranslation();
     const {tables,setTables,map,Axiosinstance,setSelectedTables,queryDynamicTable,setQueryDynamicTable} = useContext(AppContext);
     const [queryMode,setQuerymode] = useState("query-dynamic");
     const [districts,setDistricts] = useState([])
     const [classes,setClasses] = useState([]);
+    const [reset,setReset] = useState(false);
+    const [outline,setOutline] = useState(null);
     
     useEffect(()=>{
         setQueryDynamicTable(null);
@@ -21,13 +28,20 @@ export default function Query(){
             })
         }
     },[])
+    useEffect(()=>{
+        setReset(false);
+    },[queryMode])
     const click = e => {
         let target = e.target.localName === 'span' || e.target.localName === 'svg' ? e.target.parentNode: e.target.localName === 'path' ? e.target.parentNode.parentNode : e.target;
         let active = document.querySelector('.cbs-menu-query-tab div.active');
         if(active !== null && active !== target) active.classList.toggle('active');
         if(!target.classList.contains('active')) {
             setQuerymode(target.id)
+            document.querySelector(".cbs-tab-indicator").dataset.value = target.id
             target.classList.toggle('active');
+            setSelectedTables([]);
+            setQueryDynamicTable(null);
+            setReset(true);
         }
     }
     
@@ -65,60 +79,60 @@ export default function Query(){
                     },
                 });
                 break;
-            case 'LineString':
-                map.addLayer({
-                    'id': `cbs-query-${tableName}`,
-                    'source': 'cbs-query-source',
-                    'type': 'line',
-                    'paint': {
+                case 'LineString':
+                    map.addLayer({
+                        'id': `cbs-query-${tableName}`,
+                        'source': 'cbs-query-source',
+                        'type': 'line',
+                        'paint': {
                         'line-color': 'blue',
                     },
                 });
                 break;
-            case 'Point':
-                map.addLayer({
-                    'id': 'cbs-query-point-cluster',
-                    'type': 'circle',
-                    'source': 'cbs-query-source',
-                    'filter': ['has', 'point_count'],
-                    'paint': {
-                        'circle-color': [
-                            'step',
-                            ['get', 'point_count'],
-                            '#2b83ba',
-                            200,
-                            '#abdda4',
-                            400,
-                            '#ffffbf',
-                            600,
-                            '#fdae61',
-                            800,
-                            '#d7191c'
-                        ],
-                        
-                        'circle-radius': [
-                            'step',
-                            ['get', 'point_count'],
-                            15,
-                            200,
-                            20,
-                            400,
-                            25,
-                            600,
-                            30,
-                            800,
-                            35
+                case 'Point':
+                    map.addLayer({
+                        'id': 'cbs-query-point-cluster',
+                        'type': 'circle',
+                        'source': 'cbs-query-source',
+                        'filter': ['has', 'point_count'],
+                        'paint': {
+                            'circle-color': [
+                                'step',
+                                ['get', 'point_count'],
+                                '#2b83ba',
+                                200,
+                                '#abdda4',
+                                400,
+                                '#ffffbf',
+                                600,
+                                '#fdae61',
+                                800,
+                                '#d7191c'
+                            ],
+                            
+                            'circle-radius': [
+                                'step',
+                                ['get', 'point_count'],
+                                15,
+                                200,
+                                20,
+                                400,
+                                25,
+                                600,
+                                30,
+                                800,
+                                35
                             ]
-                    }
-                });
-                map.addLayer({
-                    'id': 'cbs-query-point-cluster-count',
-                    'type': 'symbol',
-                    'source': 'cbs-query-source',
-                    'filter': ['has', 'point_count'],
-                    'layout': {
-                        'text-field': '{point_count_abbreviated}',
-                        'text-font': ['Roboto Medium'],
+                        }
+                    });
+                    map.addLayer({
+                        'id': 'cbs-query-point-cluster-count',
+                        'type': 'symbol',
+                        'source': 'cbs-query-source',
+                        'filter': ['has', 'point_count'],
+                        'layout': {
+                            'text-field': '{point_count_abbreviated}',
+                            'text-font': ['Roboto Medium'],
                         'text-size': 12
                     }
                 });
@@ -134,9 +148,9 @@ export default function Query(){
                         'circle-stroke-color': '#fff'
                     }
                 });
+            }
+            
         }
-        
-    }
     
     const selectedItem = async (id,name) => {
         if(queryDynamicTable === null || (queryDynamicTable.name !== name && isNaN(name) && !id.includes('class')) )
@@ -190,50 +204,97 @@ export default function Query(){
             setQueryDynamicTable({...queryDynamicTable,  
                 count:source.features === null ? 0:source.features.length,source:{...source},where:newwhere})
             }
+        }
+        const renderLayer = () => {
+            removeSourceandLayers(map);
+            setSelectedTables([queryDynamicTable.name]);
+            addSource(queryDynamicTable.source,queryDynamicTable.type);
+            addLayers(queryDynamicTable.type,queryDynamicTable.name);
+            if(outline) addOutlineLayer(map,outline)
+        }
+        const uploadGeom = async e => {
+            var file = e.target.files[0];
+        let localSource = await readAsDataURL(file)
+        let filterSource = {
+            "type": "FeatureCollection", 
+            "features": queryDynamicTable.type === 'Point' ? queryDynamicTable.source.features.filter(j => pointOnTheFeature(j.geometry.coordinates,localSource.features[0],map)):
+            queryDynamicTable.type === 'Polygon' ? queryDynamicTable.source.features.filter(j => intersect(j,localSource.features[0])):
+            queryDynamicTable.source.features.filter( j => {
+                let inside = false;
+                j.geometry.coordinates.forEach(k =>{
+                    k.forEach(z => {
+                        if(pointOnTheFeature(z,localSource.features[0],map)) inside = true;
+                    })
+                })
+                return inside;
+            })
+        }
+        addOutlineLayer(map,localSource)
+        setOutline(localSource);
+        setQueryDynamicTable({...queryDynamicTable,  count:filterSource.features.length,source:filterSource})
+    
+        console.log(filterSource);
     }
-    const renderLayer = () => {
-        removeSourceandLayers(map);
-        setSelectedTables([queryDynamicTable.name]);
-        addSource(queryDynamicTable.source,queryDynamicTable.type);
-        addLayers(queryDynamicTable.type,queryDynamicTable.name);
+    const readAsDataURL = (file)=> {
+        return new Promise((resolve, reject) => {
+            const fr = new FileReader();
+            fr.onerror = reject;
+            fr.onload = () => {
+                resolve(JSON.parse(fr.result));
+            }
+            fr.readAsText(file, 'UTF-8');
+        });
     }
     return (
         <div className='cbs-menu-query'>
             <div className='cbs-menu-query-tab'>
-                {/* <div id="query-ready" onClick={e => click(e)}>
-                    <VscCheck/>
-                    <span>Hazır</span>
-                </div> */}
                 <div className='active' id="query-dynamic" onClick={e => click(e)}>
                     <VscChecklist/>
                     <span>Dinamik</span>
                 </div>
+                <div id="query-geom" onClick={e => click(e)}>
+                    <FaDrawPolygon/>
+                    <span>Mekansal</span>
+                </div>
             </div>
+            <div className='cbs-tab-indicator' data-value="query-dynamic"></div>
             <hr/>
             {tables !== null && 
                 <>
-                {queryMode === 'query-ready' ?
-                    <Select id={"test"} options={tables} selectedItem={selectedItem}/>:
+                {!reset && <Select id={"test2"} options={tables} selectedItem={selectedItem}/>}
+                {queryMode === 'query-dynamic' ?
                     <>
-                        <Select id={"test2"} options={tables} selectedItem={selectedItem}/>
-                        {queryDynamicTable !== null &&
-                            <>
-                            {queryDynamicTable.name !== 'districts' && 
+                        {queryDynamicTable !== null && queryDynamicTable.name !== 'districts' && 
                             <>
                             <Select id={`filter-districts`} options={districts} selectedItem={selectedItem}/>
                             <Select id={`filter-class`} options={classes} selectedItem={selectedItem}/>
                             </>
-                            }
-                            <div className='query-count'>
-                                {queryDynamicTable.count > 0 &&
-                                <button onClick={renderLayer}>Haritaya Ekle</button>
-                                }
-                                <VscFilter/>
-                                <span>{queryDynamicTable.count}</span>
-                            </div>
-                            </>
                         }
-                    </>
+                    </>:
+                    <div className='cbs-geom-polygon'>{queryDynamicTable && 
+                        <>
+                        <div>
+                            <div><BiShapePolygon/></div>
+                            <span>Poligon Çiz</span>
+                            
+                        </div>
+                        <div onClick={()=> {document.querySelector('#geom-upload').click();}}>
+                            <div><BiUpload/></div>
+                            <span>Geometri Yükle</span>
+                            <input id="geom-upload" style={{display:"none"}} type="file" accept=".geojson,.json" onChange={e => uploadGeom(e)}/>
+                        </div>
+                        </>
+                    }
+                    </div>
+                }
+                {queryDynamicTable !== null && 
+                    <div className='query-count'>
+                        {queryDynamicTable.count > 0 &&
+                            <button onClick={renderLayer}>Haritaya Ekle</button>
+                        }
+                        <VscFilter/>
+                        <span>{queryDynamicTable.count}</span>
+                    </div>
                 }
                 </>
             }
