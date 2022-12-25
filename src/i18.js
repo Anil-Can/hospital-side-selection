@@ -22,7 +22,20 @@ i18n
                     name:"Name",
                     class: "Class",
                     population:"Population",
-                    area:"Area"
+                    area:"Area",
+                    Risk_Level:"Risk Level",
+                    very_heigh:"Very High",
+                    heigh:"High",
+                    medium:"Medium",
+                    low:"Low",
+                    no:"No",
+                    Noise_Level:"Noise Level",
+                    so_close:"Very Close",
+                    close:"Close",
+                    not_close_not_far:"Not Close Not Far",
+                    far:"Far",
+                    very_far:"Very Far",
+
                 }
             },
             tr:{
@@ -41,7 +54,20 @@ i18n
                     name:"Adı",
                     class: "Sınıf",
                     population:"Nüfus",
-                    area:"Alan"
+                    area:"Alan",
+                    Risk_Level:"Risk Seviyesi",
+                    very_heigh:"Çok Yüksek",
+                    heigh:"Yüksek",
+                    medium:"Orta",
+                    low:"Düşük",
+                    no:"Yok",
+                    Noise_Level:"Gürültü Seviyesi",
+                    so_close:"Çok Yakın",
+                    close:"Yakın",
+                    not_close_not_far:"Ne Yakın Ne Uzak",
+                    far:"Uzak",
+                    very_far:"Çok Uzak",
+
                 }
             }
         }

@@ -10,14 +10,16 @@ import "./Analysis.css";
 export default function Analysis()
 {
     const { t } = useTranslation();
-    const {analysis,setAnalysis,map,Axiosinstance,setSelectedTables,analysisDynamicTable,setAnalysisDynamicTable} = useContext(AppContext);
+    const {analysis,setAnalysis,map,Axiosinstance,setSelectedTables,analysisDynamicTable,setAnalysisDynamicTable,legend,setLegend} = useContext(AppContext);
     const [isSelect,setIsSelect] = useState(false);
     const [districts,setDistricts] = useState({
         value:-1,
         list:[]
     });
     const [values,setValues] = useState([]);
-
+    useEffect(()=>{
+        console.log(values);
+    },[values])
     useEffect(()=>{
         if(analysis === null )
         {
@@ -26,6 +28,19 @@ export default function Analysis()
             })
         }
     },[]);
+    useEffect(()=>{
+        console.log(legend);
+    },[legend])
+    const setLayerPorperty = ()=>{
+        let fillColor = ['case'];
+        let colorList = ['#d7191c','#fdae61','#ffffbf','#abdda4','#2b83ba','blue'];
+        values.forEach((e,j) => {
+            fillColor.push(['==',['get',analysisDynamicTable.attribute], e.id]);
+            fillColor.push(colorList[j])
+        })
+        fillColor.push(colorList[5]);
+        return fillColor;
+    }
     const addSource = async (source,type) => {
         let feature = await Axiosinstance().get(`/getDistrict?id=${districts.value}`);
         let filterSource = {
@@ -59,7 +74,7 @@ export default function Analysis()
                 'source': 'cbs-analysis-source',
                 'type': 'fill',
                 'paint': {
-                    'fill-color': 'red',
+                    'fill-color': setLayerPorperty(),
                     
                 },
             });
@@ -90,11 +105,22 @@ export default function Analysis()
         setSelectedTables([analysisDynamicTable.name]);
         await addSource(analysisDynamicTable.source,analysisDynamicTable.type);
         addLayers(analysisDynamicTable.type,analysisDynamicTable.name);
+        if(legend) setLegend({...legend,show:true});
+        console.log(setLayerPorperty());
     }
     const selectedItem = async (id,value) => {
         let index = analysis.findIndex(e => e.id === value);
         if(index !== -1)
         {
+            setLegend(()=>{
+                if(!analysis[index].legendContent) return null;
+                let legendContent = analysis[index].legendContent.split("|")
+                return {
+                    title:legendContent[0],
+                    items:legendContent.slice(1),
+                    show:false
+                }
+            })
             const {source,attributes} = await Axiosinstance().get(`/getFeatures?tableName=${value}`);
             let results = await Axiosinstance().get(`/getCategories?name=${attributes[1]}&tableName=${value}`);
             setIsSelect(true);
@@ -150,7 +176,6 @@ export default function Analysis()
         {isSelect && 
             <>
                 <Select id={`filter-districts`} options={districts.list} selectedItem={selectedItem}/>
-                <Select id={`filter-values`} options={values} selectedItem={selectedItem}/>
                 {analysisDynamicTable !== null && 
                     <div className='query-count'>
                         {analysisDynamicTable.count > 0 &&

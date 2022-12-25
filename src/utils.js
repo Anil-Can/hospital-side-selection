@@ -164,7 +164,8 @@ const fetchData = async (type,Axiosinstance,t) => {
             id: e.name,
             geom:e.geom_type,
             item: item,
-            relation:relation
+            relation:relation,
+            legendContent:e.legend_content
         }
     });
     return tableNames;

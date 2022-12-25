@@ -9,17 +9,19 @@ import Menu from "../Menu/Menu";
 import BottomRight from "../BottomRight/BottomRight";
 import "../../i18"
 import Info from "../Info/Info";
+import Legend from "../Legend/Legend";
 
 export default function App() {
-    const[mode,setMode] = useState("");
-    const[map,setMap] = useState(null);
-    const[tables,setTables] = useState(null);
-    const[analysis,setAnalysis] = useState(null);
-    const[analysisDynamicTable,setAnalysisDynamicTable]  = useState(null);
-    const[info,setInfo] = useState(false)
-    const[selectedTables,setSelectedTables] = useState([]);
+    const [mode,setMode] = useState("");
+    const [map,setMap] = useState(null);
+    const [tables,setTables] = useState(null);
+    const [analysis,setAnalysis] = useState(null);
+    const [analysisDynamicTable,setAnalysisDynamicTable]  = useState(null);
+    const [info,setInfo] = useState(false)
+    const [selectedTables,setSelectedTables] = useState([]);
     const [queryDynamicTable,setQueryDynamicTable] = useState(null);
-    const[properties,setProperties] = useState({})
+    const [properties,setProperties] = useState({})
+    const [legend,setLegend] = useState(null);
     const Axiosinstance = () => {
         let controller = new AbortController();
         const instance = axios.create({
@@ -55,17 +57,18 @@ export default function App() {
     return(
         <React.StrictMode>
             <AppContext.Provider value={{
-                mode,setMode,Axiosinstance,map,setMap,info,setInfo,
-                tables,setTables,selectedTables,setSelectedTables,
-                queryDynamicTable,setQueryDynamicTable,properties,setProperties,
-                analysis,setAnalysis,analysisDynamicTable,setAnalysisDynamicTable
-                }}>
+            mode,setMode,Axiosinstance,map,setMap,info,setInfo,
+            tables,setTables,selectedTables,setSelectedTables,legend,setLegend,
+            queryDynamicTable,setQueryDynamicTable,properties,setProperties,
+            analysis,setAnalysis,analysisDynamicTable,setAnalysisDynamicTable
+            }}>
                 <Hamburger/>
                 <Sidebar/>
                 <Map/>
                 <Menu/>
                 <BottomRight/>
                 <Info/>
+                {legend && legend.show && <Legend/>}
             </AppContext.Provider>
         </React.StrictMode>
     )

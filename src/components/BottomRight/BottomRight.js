@@ -8,7 +8,7 @@ import { removeSourceandLayers } from "../../utils";
 
 
 export default function BottomRight() {
-    const {map,selectedTables,setSelectedTables,info,setInfo,properties,setProperties,setQueryDynamicTable} = useContext(AppContext);
+    const {map,selectedTables,setSelectedTables,info,setInfo,properties,setProperties,setQueryDynamicTable,setLegend} = useContext(AppContext);
 
     const homeClicked = () => {
         var bbox = [
@@ -51,6 +51,7 @@ export default function BottomRight() {
         setInfo(false);
         setQueryDynamicTable(null);
         setProperties({});
+        setLegend(null);
     };
     const infoClicked = () => {
         document.querySelector('#cbs-info').classList.toggle('enable');
