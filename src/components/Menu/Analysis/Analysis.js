@@ -42,22 +42,25 @@ export default function Analysis()
         return fillColor;
     }
     const addSource = async (source,type) => {
-        let feature = await Axiosinstance().get(`/getDistrict?id=${districts.value}`);
         let filterSource = {
             "type": "FeatureCollection", 
             "features": []
         }
-        source.features.forEach(e =>{
-            let clipped = intersect(feature,e);
-            if(e) filterSource.features.push({
-                geometry:clipped.geometry,
-                properties:e.properties
+        if(districts.value !== -1)
+        {
+            let feature = await Axiosinstance().get(`/getDistrict?id=${districts.value}`);
+            
+            source.features.forEach(e =>{
+                let clipped = intersect(feature,e);
+                if(e) filterSource.features.push({
+                    geometry:clipped.geometry,
+                    properties:e.properties
+                })
             })
-        })
-        console.log(filterSource);
+        }
         map.addSource('cbs-analysis-source', {
             type: 'geojson',
-            data:filterSource,
+            data:districts.value !== -1 ? filterSource:source,
             tolerance: 0,
             ...(type === 'Point' && {
                 cluster: true,
