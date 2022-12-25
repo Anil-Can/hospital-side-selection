@@ -7,8 +7,8 @@ import { default as intersect } from "@turf/intersect"
 import { AppContext } from "../../../context/AppContext";
 import { VscFilter,VscChecklist } from "react-icons/vsc";
 import { BiShapePolygon,BiUpload } from "react-icons/bi";
-import React,{useContext, useEffect,useState} from 'react';
-import { removeSourceandLayers,whereSQL,fetchData,addOutlineLayer } from '../../../utils';
+import React,{useContext, useEffect,useState,useRef} from 'react';
+import { removeSourceandLayers,whereSQL,fetchData,addOutlineLayer,addDrawLayer } from '../../../utils';
 
 export default function Query(){
     const { t } = useTranslation();
@@ -18,7 +18,23 @@ export default function Query(){
     const [classes,setClasses] = useState([]);
     const [reset,setReset] = useState(false);
     const [outline,setOutline] = useState(null);
-    
+    const draw = useRef({
+        click:0,
+        point_number: 0,
+        moveUpdate: false,
+        addpoint: false,
+        source: {
+            "type": "FeatureCollection", 
+            "features": [{
+                    "type": "Feature",
+                    "geometry": {
+                        "type": "Polygon",
+                        "coordinates": []
+                    }
+                }
+            ]
+        }
+    }) 
     useEffect(()=>{
         setQueryDynamicTable(null);
         if(tables === null )
@@ -153,6 +169,7 @@ export default function Query(){
         }
     
     const selectedItem = async (id,name) => {
+        removeSourceandLayers(map);
         if(queryDynamicTable === null || (queryDynamicTable.name !== name && isNaN(name) && !id.includes('class')) )
         {
             setQueryDynamicTable(null)
@@ -163,6 +180,7 @@ export default function Query(){
                 name:name,
                 count:source.features.length,
                 source:{...source},
+                allSource:{...source},
                 attributes:attributes,
                 type:tables[index].geom,
                 ...(tables[index].geom !== 'Point',{joinAtt:tables[index].relation.field})
@@ -205,37 +223,110 @@ export default function Query(){
                 count:source.features === null ? 0:source.features.length,source:{...source},where:newwhere})
             }
         }
-        const renderLayer = () => {
-            removeSourceandLayers(map);
-            setSelectedTables([queryDynamicTable.name]);
-            addSource(queryDynamicTable.source,queryDynamicTable.type);
-            addLayers(queryDynamicTable.type,queryDynamicTable.name);
-            if(outline) addOutlineLayer(map,outline)
+    const renderLayer = () => {
+        removeSourceandLayers(map);
+        setSelectedTables([queryDynamicTable.name]);
+        addSource(queryDynamicTable.source,queryDynamicTable.type);
+        addLayers(queryDynamicTable.type,queryDynamicTable.name);
+        if(outline) addOutlineLayer(map,outline)
+    }
+    const drawMove = e => {
+        if(draw.current.moveUpdate)
+        {
+            if(draw.current.addpoint)
+            {
+                draw.current.source.features[0].geometry.coordinates[0][draw.current.point_number] = [e.lngLat.lng, e.lngLat.lat];
+            }
+            else
+            {
+                draw.current.source.features[0].geometry.coordinates[0].splice(draw.current.point_number,'0',[e.lngLat.lng, e.lngLat.lat]);
+                draw.current.addpoint = true;
+            }
+            map.getSource('cbs-draw').setData(draw.current.source);
         }
-        const uploadGeom = async e => {
-            var file = e.target.files[0];
-        let localSource = await readAsDataURL(file)
+    }
+    const drawClicked = e => {
+        draw.current.click++;
+        draw.current.moveUpdate = false;
+        setTimeout(() => {
+            draw.current.click = 0;
+            draw.current.moveUpdate = true;
+        },350);
+        if(draw.current.click <= 1)
+        {
+            if(draw.current.source.features[0].geometry.coordinates.length === 0)
+            {
+                draw.current.source.features[0].geometry.coordinates[0] = [
+                    [e.lngLat.lng,e.lngLat.lat],
+                    [e.lngLat.lng,e.lngLat.lat]
+                ]
+                draw.current.point_number = 1;
+                map.on('mousemove',drawMove);
+            }
+            else
+            {
+                draw.current.source.features[0].geometry.coordinates[0][draw.current.point_number] = [e.lngLat.lng,e.lngLat.lat];
+                draw.current.addpoint = false;
+                draw.current.point_number++; 
+            }
+            map.getSource('cbs-draw').setData(draw.current.source);
+        }
+        else
+        {
+            resultSource(draw.current.source);
+            draw.current = {
+                click:0,
+                point_number: 0,
+                moveUpdate: false,
+                addpoint: false,
+                source: {
+                    "type": "FeatureCollection", 
+                    "features": [{
+                            "type": "Feature",
+                            "geometry": {
+                                "type": "Polygon",
+                                "coordinates": []
+                            }
+                        }
+                    ]
+                }
+            }
+            map.off('click',drawClicked);
+            map.off('mousemove',drawMove);
+            map.getCanvas().style.cursor = "default";
+            map.getSource('cbs-draw').setData(draw.current.source);
+        }
+    }
+    const polygonDraw = () => {
+        addDrawLayer(map);
+        map.getCanvas().style.cursor = "crosshair";
+        map.on('click',drawClicked);
+    }
+    const resultSource = source => {
         let filterSource = {
             "type": "FeatureCollection", 
-            "features": queryDynamicTable.type === 'Point' ? queryDynamicTable.source.features.filter(j => pointOnTheFeature(j.geometry.coordinates,localSource.features[0],map)):
-            queryDynamicTable.type === 'Polygon' ? queryDynamicTable.source.features.filter(j => intersect(j,localSource.features[0])):
-            queryDynamicTable.source.features.filter( j => {
+            "features": queryDynamicTable.type === 'Point' ? queryDynamicTable.allSource.features.filter(j => pointOnTheFeature(j.geometry.coordinates,source.features[0],map)):
+            queryDynamicTable.type === 'Polygon' ? queryDynamicTable.allSource.features.filter(j => intersect(j,source.features[0])):
+            queryDynamicTable.allSource.features.filter( j => {
                 let inside = false;
                 j.geometry.coordinates.forEach(k =>{
                     k.forEach(z => {
-                        if(pointOnTheFeature(z,localSource.features[0],map)) inside = true;
+                        if(pointOnTheFeature(z,source.features[0],map)) inside = true;
                     })
                 })
                 return inside;
             })
         }
-        addOutlineLayer(map,localSource)
-        setOutline(localSource);
+        addOutlineLayer(map,source)
+        setOutline(source);
         setQueryDynamicTable({...queryDynamicTable,  count:filterSource.features.length,source:filterSource})
-    
-        console.log(filterSource);
     }
-    const readAsDataURL = (file)=> {
+    const uploadGeom = async e => {
+        var file = e.target.files[0];
+        let localSource = await readAsDataText(file)
+        resultSource(localSource);
+    }
+    const readAsDataText = (file)=> {
         return new Promise((resolve, reject) => {
             const fr = new FileReader();
             fr.onerror = reject;
@@ -273,7 +364,7 @@ export default function Query(){
                     </>:
                     <div className='cbs-geom-polygon'>{queryDynamicTable && 
                         <>
-                        <div>
+                        <div onClick={polygonDraw}>
                             <div><BiShapePolygon/></div>
                             <span>Poligon Çiz</span>
                             

@@ -32,14 +32,17 @@ const pointOnTheFeature = (point,polygon,map) => {
     return inside;
 }
 const removeSourceandLayers = map => {
-    
     if(map.getLayer('cbs-query-outline')) map.removeLayer('cbs-query-outline');
+    map.getStyle().layers.filter((layer) => layer.id.startsWith('cbs-draw')).forEach(layer =>{
+        map.removeLayer(layer.id)
+    });
     map.getStyle().layers.filter((layer) => layer.id.startsWith('cbs-query')).forEach(layer =>{
         map.removeLayer(layer.id)
     });
     map.getStyle().layers.filter((layer) => layer.id.startsWith('cbs-analysis')).forEach(layer =>{
         map.removeLayer(layer.id)
     });
+    if(map.getSource('cbs-draw')) map.removeSource('cbs-draw');
     if(map.getSource('cbs-query-source')) map.removeSource('cbs-query-source');
     if(map.getSource('cbs-query-outline')) map.removeSource('cbs-query-outline');
     if(map.getSource('cbs-analysis-source')) map.removeSource('cbs-analysis-source');
@@ -60,6 +63,67 @@ const addOutlineLayer = (map,source) => {
             'line-color': 'green',
             'line-width': 4
         },
+    });
+}
+const addDrawLayer = map => {
+    map.getStyle().layers.filter((layer) => layer.id.startsWith('cbs-draw')).forEach(layer =>{
+        map.removeLayer(layer.id)
+    });
+    if(map.getSource('cbs-draw')) map.removeSource('cbs-draw');
+    map.addSource('cbs-draw', {
+        type: 'geojson',
+        data: {
+            "type": "FeatureCollection", 
+            "features": [{
+                    "type": "Feature",
+                    "geometry": {
+                        "type": "Polygon",
+                        "coordinates": []
+                    }
+                }
+            ]
+        },
+        tolerance: 0
+    });
+    map.addLayer({
+        'id': 'cbs-draw-polygon',
+        'source': 'cbs-draw',
+        'type': 'fill',
+        'layout': {
+            'visibility': 'visible',
+        },
+        'paint': {
+            'fill-color': '#d6c60f',
+            'fill-opacity':0.3
+        },
+        'maxZoom': 24,
+    });
+    map.addLayer({
+        'id': 'cbs-draw-line',
+        'source': 'cbs-draw',
+        'type': 'line',
+        'layout': {
+            'visibility': 'visible',
+        },
+        'paint': {
+            'line-width': 3,
+            'line-color': '#d6870f',
+            'line-dasharray': [0.5, 2]
+        },
+    });
+    
+    map.addLayer({
+        id: 'cbs-draw-point',
+        type: 'circle',
+        source: 'cbs-draw',
+        'layout': {
+            'visibility': 'visible',
+        },
+        paint: {
+            'circle-color': '#d6870f',
+            'circle-radius': 4,
+        },
+        
     });
 }
 const whereSQL = (old,attribute,value) =>  {
@@ -106,4 +170,4 @@ const fetchData = async (type,Axiosinstance,t) => {
     return tableNames;
     
 }
-export {toFeature,pointOnTheFeature,removeSourceandLayers,whereSQL,fetchData,addOutlineLayer}
+export {toFeature,pointOnTheFeature,removeSourceandLayers,whereSQL,fetchData,addOutlineLayer,addDrawLayer}
