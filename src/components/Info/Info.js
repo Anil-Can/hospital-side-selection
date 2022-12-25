@@ -20,7 +20,7 @@ export default function Info () {
                         map((key,i)=>{
                             return (
                                 <>
-                                <div style={{fontWeight:"bold"}}>{ t(`${key}`)}</div>
+                                <div style={{fontWeight:"bold"}}><span>{ t(`${key}`)}</span></div>
                                 <div>{properties[key]}</div>
                                 </>
                             )

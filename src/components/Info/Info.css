@@ -1,6 +1,7 @@
 .cbs-info {
     position: absolute;
-    right: -500px;
+    right: -310px;
+    max-width: 300px;
     bottom: 10px;
     z-index: 20;
     transition: 1.5s;
@@ -35,6 +36,11 @@
 }
 .cbs-info-properties div {
     padding: 0.4em 0.3em;
+}
+.cbs-info-properties div:nth-child(odd){
+    display: flex;
+    align-items: center;
+    border-right: 1px solid var(--primary-color);
 }
 .cbs-info-properties div:nth-child(-n+2),.cbs-info-properties div:nth-child(n+5):nth-child(-n+6){
     background-color: var(--surface-300);
